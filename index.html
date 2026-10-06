@@ -21,6 +21,7 @@
   --bg:#1D1519; --surface:#291E24; --ink:#F3E9EE; --muted:#B7A0AC; --plum:#CC9DB6; --plum-ink:#1D1519;
   --line:#3D2E36; --tint:#33252D; --good:#72C99E; --good-tint:#1F3329; --warn:#E8897C; --warn-tint:#3A2220; color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{min-height:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation}
@@ -130,10 +131,27 @@ tr:last-child td{border-bottom:0}
 .dl{padding:13px 18px;border-radius:12px;background:var(--plum);color:var(--plum-ink);font-weight:800}
 @media (max-width:480px){.tile .name{font-size:20px}.pays{grid-template-columns:repeat(2,minmax(0,1fr))}.cashbox .opts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* Passcode screen */
+.lock{position:fixed;inset:0;z-index:30;background:var(--bg);display:grid;place-items:center;padding:16px}
+.lock form{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px}
+.lock h2{font-family:var(--f-script);font-weight:400;font-size:44px;color:var(--plum);margin:0;line-height:1}
+.lock p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.lock input{font:inherit;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.lock .msg{color:var(--warn);font-weight:700;font-size:14px;min-height:1em}
 </style>
-
 </head>
 <body>
+
+<div class="lock" id="lock" hidden>
+  <form id="lockForm">
+    <h2>Coffee</h2>
+    <p>Enter the cashier passcode to connect this device to the order sheet. You only need to do this once per device.</p>
+    <input id="passcode" type="password" autocomplete="off" placeholder="Passcode" aria-label="Passcode">
+    <div class="msg" id="lockMsg"></div>
+    <button class="dl" type="submit">Unlock register</button>
+  </form>
+</div>
+
 <header>
   <div class="bar">
     <div class="logo"><small>Girls Who Code</small><b>Coffee</b></div>
@@ -228,8 +246,7 @@ const $ = s => document.querySelector(s);
 const money = n => "$" + (Math.round(n*100)/100).toFixed(2);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-let db = null, orders = [], cart = {lattes:[], pan:0}, uid = 0, toastTimer;
-const LS = "gwc-register-local";
+let orders = [], cart = {lattes:[], pan:0}, uid = 0, toastTimer;
 
 /* ---------- cart ---------- */
 const cartTotal = () => cart.lattes.reduce((s,l)=>s+PRICE.latte+(l.oat?PRICE.oat:0)+(l.foam?PRICE.foam:0),0) + cart.pan*PRICE.pan;
@@ -321,9 +338,10 @@ async function saveOrder(payment, tendered){
   cart = {lattes:[], pan:0}; $("#member").value = ""; renderCart();
   const change = tendered != null ? tendered - order.total : 0;
   try {
-    let id;
-    if (db){ const ref = db.collection("orders").doc(); id = ref.id; await ref.set(order); }
-    else { id = "l" + Date.now(); orders.push({id, ...order}); persistLocal(); refresh(); }
+    const id = (crypto.randomUUID ? crypto.randomUUID() : "o" + Date.now() + Math.random().toString(36).slice(2));
+    pending.set(id, {id, ...order}); orders.push({id, ...order}); refresh();   // show it instantly
+    try { await api("add", {order: {id, ...order}}); }
+    catch(e){ pending.delete(id); orders = orders.filter(o => o.id !== id); refresh(); throw e; }
     toast(`<div><div class="big num">${change>0 ? "Change " + money(change) : money(order.total)}</div><div style="font-size:13px;opacity:.8">Order #${no} saved · ${esc(payment)}</div></div><button data-undo="${id}">Undo</button>`, change>0 ? 9000 : 4500);
     $("#toast [data-undo]").onclick = () => { voidOrder(id); hideToast(); };
   } catch(err){
@@ -333,8 +351,8 @@ async function saveOrder(payment, tendered){
 }
 async function voidOrder(id){
   try {
-    if (db) await db.collection("orders").doc(id).delete();
-    else { orders = orders.filter(o => o.id !== id); persistLocal(); refresh(); }
+    voided.add(id); pending.delete(id); orders = orders.filter(o => o.id !== id); refresh();
+    await api("void", {id});
   } catch(e){ toast("<div>Couldn't void that order. Try again.</div>", 5000, true); }
 }
 function toast(html, ms, err){
@@ -398,10 +416,9 @@ function show(v){
 try{ const t = localStorage.getItem("gwc-tab"); if (t) show(t); }catch(e){}
 
 /* ---------- Excel export ---------- */
-let downloads = null;
 async function exportExcel(){
   const note = $("#dlNote");
-  if (!window.XLSX || !downloads){ note.hidden = false; note.textContent = "Excel download isn't available in this view. Open the register in the Claude app or claude.ai to download."; show("totals"); return; }
+  if (!window.XLSX){ note.hidden = false; note.textContent = "The Excel tool didn't load. Check your internet connection and reload."; show("totals"); return; }
   const s = stats();
   const head = ["Order #","Time","Vanilla Latte","Pumpkin Latte","Oatmilk","Cold Foam","Pan Dulce","Drinks","Total","Payment","Member Name","Cash Given"];
   const rows = orders.map((o,i) => [i+1, new Date(o.createdAt).toLocaleString(), o.vanilla, o.pumpkin, o.oat, o.foam, o.pan, (o.drinks||[]).join("; "), o.total, o.payment, o.name||"", o.tendered ?? ""]);
@@ -414,36 +431,89 @@ async function exportExcel(){
     ...Object.entries(s.pays).map(([k,v]) => [k, v.n, v.amt])];
   const ws2 = XLSX.utils.aoa_to_sheet(sum); ws2["!cols"] = [{wch:22},{wch:10},{wch:12}];
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws2, "Summary"); XLSX.utils.book_append_sheet(wb, ws, "Orders");
-  const buf = XLSX.write(wb, {bookType:"xlsx", type:"array"});
   const d = new Date(); const stamp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-  try { await downloads.save({filename:`GWC Coffee Orders ${stamp}.xlsx`, data:buf}); }
-  catch(e){ if (e && e.code !== "declined") toast("<div>Download didn't go through. Try again in a moment.</div>", 5000, true); }
+  XLSX.writeFile(wb, `GWC Coffee Orders ${stamp}.xlsx`);
 }
 
-/* ---------- storage ---------- */
-function persistLocal(){ try{ localStorage.setItem(LS, JSON.stringify(orders)); }catch(e){} }
+/* ---------- storage (Google Sheet) ---------- */
+// Your Apps Script web app. The passcode is NOT stored here; each device types it once.
+const API_URL = "https://script.google.com/macros/s/AKfycbxvJk_dVd_E-cm4ZdxcN6FE_oKvlEY6xr_VbpfE5cttwkqnPdn0DYxDxv3LjKrZ4Jnpfg/exec";
+const KEY_STORE = "gwc-passcode";
+let KEY = "";
+try { KEY = sessionStorage.getItem(KEY_STORE) || ""; } catch(e){}
+const pending = new Map();   // orders saved on this device but not back from the sheet yet
+const voided = new Set();    // orders voided on this device
+
+// Send an order or a void to the sheet.
+// text/plain avoids a CORS "preflight" request, which Apps Script can't answer.
+async function api(action, payload){
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {"Content-Type": "text/plain;charset=utf-8"},
+    body: JSON.stringify({action, key: KEY, ...payload})
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+
+// Read every order from the sheet
+async function fetchOrders(key){
+  const res = await fetch(API_URL + "?key=" + encodeURIComponent(key));
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+
+async function load(){
+  if (!KEY) return;
+  try {
+    const rows = await fetchOrders(KEY);
+    const fromSheet = rows.map(r => ({
+      ...r,
+      createdAt: Number(r.createdAt),
+      drinks: String(r.drinks || "").split("; ").filter(Boolean),
+      tendered: r.tendered === "" ? undefined : Number(r.tendered)
+    })).filter(o => !voided.has(o.id));
+    const ids = new Set(fromSheet.map(o => o.id));
+    for (const id of ids) pending.delete(id);
+    orders = [...fromSheet, ...pending.values()].sort((a,b) => a.createdAt - b.createdAt);
+    $("#banner").hidden = true;
+    refresh();
+  } catch(e){
+    if (String(e.message).includes("passcode")) { lockScreen("That passcode stopped working. Enter the current one."); return; }
+    const b = $("#banner"); b.hidden = false;
+    b.textContent = "Can't reach the order sheet right now. Check the Wi-Fi; new orders will fail to save until it's back.";
+  }
+}
+
+// Passcode screen
+function lockScreen(msg){
+  $("#lock").hidden = false; $("#lockMsg").textContent = msg || "";
+  setTimeout(() => $("#passcode").focus(), 50);
+}
+$("#lockForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const tryKey = $("#passcode").value.trim();
+  if (!tryKey) return;
+  $("#lockMsg").textContent = "Checking…";
+  try {
+    await fetchOrders(tryKey);
+    KEY = tryKey;
+    try { sessionStorage.setItem(KEY_STORE, KEY); } catch(e){}
+    $("#lock").hidden = true; $("#passcode").value = ""; $("#lockMsg").textContent = "";
+    load();
+  } catch(err){
+    $("#lockMsg").textContent = String(err.message).includes("passcode") ? "Wrong passcode. Try again." : "Can't reach the sheet. Check the internet connection.";
+  }
+});
+
 let wakeLock = null;
 async function wake(){ if (wakeLock || !navigator.wakeLock) return; try{ wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", ()=> wakeLock = null); }catch(e){} }
 
 renderCart(); refresh();
-(async () => {
-  const use = n => window.claude?.use ? window.claude.use(n).catch(()=>null) : Promise.resolve(null);
-  const [d, dl] = await Promise.all([use("db"), use("downloads")]);
-  downloads = dl;
-  if (!d){
-    try{ orders = JSON.parse(localStorage.getItem(LS) || "[]"); }catch(e){ orders = []; }
-    const b = $("#banner"); b.hidden = false;
-    b.textContent = "Orders are only being saved on this device. Open the register signed in to claude.ai to keep them in the shared log.";
-    refresh(); return;
-  }
-  db = d;
-  db.collection("orders").orderBy("createdAt").onSnapshot(snap => {
-    orders = snap.docs.map(doc => ({id:doc.id, ...doc.data()}));
-    refresh();
-  }, err => {
-    const b = $("#banner"); b.hidden = false; b.textContent = "Lost connection to the order log. Reload the page to reconnect.";
-  });
-})();
+if (KEY) load(); else lockScreen();
+setInterval(load, 10000);   // pick up other cashiers' orders every 10 seconds
 </script>
 </body>
 </html>

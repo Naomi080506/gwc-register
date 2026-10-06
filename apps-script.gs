@@ -1,6 +1,4 @@
 // GWC Coffee Register — Google Apps Script backend
-// Paste this into Extensions → Apps Script in your Google Sheet, then deploy as a Web app.
-
 const SHEET = 'Orders';
 const HEAD = ['id','createdAt','time','vanilla','pumpkin','oat','foam','pan','drinks','total','payment','name','tendered'];
 
@@ -10,13 +8,18 @@ function sheet_() {
   if (!sh) { sh = ss.insertSheet(SHEET); sh.appendRow(HEAD); }
   return sh;
 }
-
 function json_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
+// Only requests with the right passcode get through
+function allowed_(key) {
+  const real = PropertiesService.getScriptProperties().getProperty('PASSCODE');
+  return !!real && key === real;
+}
 
 // Read all orders
-function doGet() {
+function doGet(e) {
+  if (!allowed_(e.parameter.key)) return json_({ error: 'wrong passcode' });
   const [h, ...rows] = sheet_().getDataRange().getValues();
   return json_(rows.map(r => Object.fromEntries(h.map((k, i) => [k, r[i]]))));
 }
@@ -24,6 +27,7 @@ function doGet() {
 // Add or void an order
 function doPost(e) {
   const body = JSON.parse(e.postData.contents);
+  if (!allowed_(body.key)) return json_({ error: 'wrong passcode' });
   const sh = sheet_();
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
