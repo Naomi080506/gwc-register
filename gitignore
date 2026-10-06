@@ -1,0 +1,10 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+*.code-workspace
+
+# Downloaded order exports (keep customer data out of the repo)
+*.xlsx

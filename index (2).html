@@ -1,0 +1,440 @@
+<title>GWC Coffee Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Allura&family=Marcellus&family=Mulish:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: point-of-sale — menu tiles left, live ticket right; tabs for Orders and Totals. Palette taken from the GWC menu poster. */
+:root{
+  --bg:#FBF6EE; --surface:#FFFFFF; --ink:#3E2A35; --muted:#86707C; --plum:#7B5167; --plum-ink:#FFFFFF;
+  --line:#E7DAE0; --tint:#F4EAEF; --good:#2E7A57; --good-tint:#E3F2EA; --warn:#B0463A; --warn-tint:#F8E4E1;
+  --f-script:"Allura","Brush Script MT",cursive; --f-display:"Marcellus",Georgia,serif; --f-body:"Mulish",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1D1519; --surface:#291E24; --ink:#F3E9EE; --muted:#B7A0AC; --plum:#CC9DB6; --plum-ink:#1D1519;
+  --line:#3D2E36; --tint:#33252D; --good:#72C99E; --good-tint:#1F3329; --warn:#E8897C; --warn-tint:#3A2220; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1D1519; --surface:#291E24; --ink:#F3E9EE; --muted:#B7A0AC; --plum:#CC9DB6; --plum-ink:#1D1519;
+  --line:#3D2E36; --tint:#33252D; --good:#72C99E; --good-tint:#1F3329; --warn:#E8897C; --warn-tint:#3A2220; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:12px 40px}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1180px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{display:flex;align-items:baseline;gap:8px;margin-right:auto}
+.logo small{font-family:var(--f-display);letter-spacing:.14em;font-size:11px;color:var(--muted);text-transform:uppercase}
+.logo b{font-family:var(--f-script);font-weight:400;font-size:34px;color:var(--plum);line-height:1}
+.tabs{display:flex;background:var(--tint);border-radius:999px;padding:4px;gap:2px}
+.tabs button{padding:8px 16px;border-radius:999px;font-weight:700;font-size:14px;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.raised{font-family:var(--f-display);font-size:15px;color:var(--muted)}
+.raised strong{color:var(--ink);font-size:20px;font-weight:400}
+.banner{max-width:1180px;margin:8px auto 0;padding:8px 16px;font-size:13px;color:var(--warn);background:var(--warn-tint);border-radius:10px}
+
+/* Register */
+.reg{display:grid;grid-template-columns:1fr;gap:20px}
+@media (min-width:820px){.reg{grid-template-columns:1.25fr 1fr;align-items:start}}
+.label{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tile{background:var(--surface);border:2px solid var(--line);border-radius:var(--r);padding:18px 16px;min-height:118px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:10px;transition:transform .08s,border-color .15s}
+.tile:active{transform:scale(.97)}
+.tile:hover{border-color:var(--plum)}
+.tile .name{font-family:var(--f-display);font-size:24px;line-height:1.1}
+.tile .price{font-weight:800;color:var(--plum);font-size:18px}
+.tile.pastry{grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center}
+.tile .count{min-width:30px;height:30px;padding:0 8px;border-radius:999px;background:var(--plum);color:var(--plum-ink);font-weight:800;display:inline-grid;place-items:center;font-size:15px}
+.hint{font-size:13px;color:var(--muted);margin:12px 2px 0;line-height:1.5}
+
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px}
+@media (min-width:820px){.ticket{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px)}}
+.ticket h2{font-family:var(--f-display);font-weight:400;font-size:22px;margin:0;display:flex;justify-content:space-between;align-items:baseline}
+.ticket h2 span{font-family:var(--f-body);font-size:13px;color:var(--muted)}
+.lines{display:flex;flex-direction:column;gap:8px;min-height:60px}
+.empty{color:var(--muted);font-size:14px;padding:14px 0;text-align:center;border:1.5px dashed var(--line);border-radius:12px}
+.line{display:grid;grid-template-columns:1fr auto;gap:8px 10px;padding:10px 12px;background:var(--tint);border-radius:12px;align-items:center}
+.line .t{font-weight:700}
+.line .amt{font-weight:800;text-align:right}
+.mods{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{padding:9px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:14px;font-weight:700;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--plum);border-color:var(--plum);color:var(--plum-ink)}
+.x{margin-left:auto;width:38px;height:38px;border-radius:999px;color:var(--muted);font-size:20px;line-height:1}
+.x:hover{background:var(--surface);color:var(--warn)}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:38px;height:38px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line);font-size:20px;font-weight:700}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.field input{font:inherit;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:12px}
+.total span{font-weight:700;color:var(--muted)}
+.total strong{font-family:var(--f-display);font-weight:400;font-size:40px}
+.pays{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pay{padding:15px 6px;border-radius:12px;background:var(--plum);color:var(--plum-ink);font-weight:800;font-size:15px}
+.pay:disabled{opacity:.35;cursor:not-allowed}
+.pay:not(:disabled):active{transform:scale(.97)}
+.paynote{font-size:13px;color:var(--muted);margin:-4px 0 0}
+.cashbox{display:flex;flex-direction:column;gap:10px}
+.cashbox .opts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cashbox .opts button{padding:15px 4px;border-radius:12px;background:var(--plum);color:var(--plum-ink);font-weight:800}
+.ghost{padding:10px 14px;border-radius:10px;border:1.5px solid var(--line);font-weight:700;font-size:14px;color:var(--muted)}
+.rowbtns{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px 12px 18px;display:flex;gap:14px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px);width:max-content}
+.toast .big{font-family:var(--f-display);font-size:22px}
+.toast button{color:var(--bg);font-weight:800;padding:8px 10px;border-radius:8px;border:1.5px solid currentColor;opacity:.85}
+.toast.err{background:var(--warn);color:#fff}
+
+/* Orders */
+.olist{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.orow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:4px 14px;padding:12px 16px;border-top:1px solid var(--line);align-items:center}
+.orow:first-child{border-top:0}
+.orow .n{font-family:var(--f-display);font-size:20px;color:var(--plum)}
+.orow .what{font-weight:700;min-width:0}
+.orow .meta{font-size:13px;color:var(--muted);margin-top:2px}
+.orow .right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.orow .right strong{font-size:17px}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;background:var(--tint);font-size:12px;font-weight:800;color:var(--ink)}
+.void{font-size:13px;font-weight:700;color:var(--muted);padding:4px 8px;border-radius:8px}
+.void.arm{background:var(--warn);color:#fff}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.toolbar input{font:inherit;padding:9px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);min-width:0;flex:1;max-width:280px}
+
+/* Totals */
+.hero{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-end;margin-bottom:22px}
+.hero .big{font-family:var(--f-display);font-size:clamp(44px,9vw,72px);line-height:1}
+.hero .sub{color:var(--muted);font-weight:700}
+.cols{display:grid;grid-template-columns:1fr;gap:18px}
+@media (min-width:820px){.cols{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.card h3{font-family:var(--f-display);font-weight:400;font-size:20px;margin:0 0 12px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{padding:8px 4px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:800}
+td.r,th.r{text-align:right}
+tr:last-child td{border-bottom:0}
+.bar-row{display:grid;grid-template-columns:90px 1fr 80px;gap:10px;align-items:center;padding:6px 0;font-size:15px}
+.track{height:12px;border-radius:6px;background:var(--tint);overflow:hidden}
+.fill{height:100%;background:var(--plum);border-radius:6px}
+.drawer{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;font-size:15px}
+.drawer input{font:inherit;width:110px;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);text-align:right}
+.drawer .em{font-weight:800;font-size:18px}
+.dl{padding:13px 18px;border-radius:12px;background:var(--plum);color:var(--plum-ink);font-weight:800}
+@media (max-width:480px){.tile .name{font-size:20px}.pays{grid-template-columns:repeat(2,minmax(0,1fr))}.cashbox .opts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header>
+  <div class="bar">
+    <div class="logo"><small>Girls Who Code</small><b>Coffee</b></div>
+    <div class="raised">Raised <strong class="num" id="hdrTotal">$0.00</strong></div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tab-register" aria-selected="true" data-view="register">Register</button>
+      <button role="tab" id="tab-orders" aria-selected="false" data-view="orders">Orders <span id="hdrCount" class="num"></span></button>
+      <button role="tab" id="tab-totals" aria-selected="false" data-view="totals">Totals</button>
+    </nav>
+  </div>
+</header>
+<div class="banner" id="banner" hidden></div>
+
+<main class="wrap">
+  <!-- REGISTER -->
+  <section id="view-register" class="reg">
+    <div>
+      <p class="label">Tap to add</p>
+      <div class="tiles">
+        <button class="tile" id="add-vanilla" data-add="Vanilla"><span class="name">Vanilla<br>Latte</span><span class="price num">$5.00</span></button>
+        <button class="tile" id="add-pumpkin" data-add="Pumpkin"><span class="name">Pumpkin<br>Latte</span><span class="price num">$5.00</span></button>
+        <button class="tile pastry" id="add-pan" data-add="Pan"><span class="name">Pan Dulce</span><span style="display:flex;gap:10px;align-items:center"><span class="count num" id="panBadge" hidden>0</span><span class="price num">$2.00</span></span></button>
+      </div>
+      <p class="hint">Oatmilk and cold foam (+$0.50 each) are toggles on each latte in the order. Coffee + pastry promo ($7) is the same as $5 + $2, so it adds up on its own.</p>
+    </div>
+
+    <aside class="ticket" aria-label="Current order">
+      <h2>Current order <span id="nextNo" class="num"></span></h2>
+      <div class="lines" id="lines"></div>
+      <div class="field">
+        <label for="member">Member name (for points)</label>
+        <input id="member" autocomplete="off" placeholder="Optional">
+      </div>
+      <div class="total"><span>Total</span><strong class="num" id="total">$0.00</strong></div>
+      <div id="payArea">
+        <div class="pays">
+          <button class="pay" data-pay="Cash">Cash</button>
+          <button class="pay" data-pay="Zelle">Zelle</button>
+          <button class="pay" data-pay="Cash App">Cash App</button>
+          <button class="pay" data-pay="Venmo">Venmo</button>
+          <button class="pay" data-pay="Apple Pay">Apple Pay</button>
+          <button class="pay" data-pay="Card">Card</button>
+        </div>
+      </div>
+      <div class="cashbox" id="cashBox" hidden>
+        <p class="label" style="margin:0">Cash — customer gave</p>
+        <div class="opts" id="cashOpts"></div>
+        <button class="ghost" id="cashBack">Back</button>
+      </div>
+      <p class="paynote">Tapping how they paid saves the order.</p>
+      <div class="rowbtns"><button class="ghost" id="clearBtn">Clear order</button></div>
+    </aside>
+  </section>
+
+  <!-- ORDERS -->
+  <section id="view-orders" hidden>
+    <div class="toolbar">
+      <input id="search" placeholder="Search name or payment" aria-label="Search orders">
+      <button class="dl" data-export>Download Excel</button>
+    </div>
+    <div class="olist" id="olist"></div>
+  </section>
+
+  <!-- TOTALS -->
+  <section id="view-totals" hidden>
+    <div class="hero">
+      <div><div class="sub">Total raised</div><div class="big num" id="tTotal">$0.00</div></div>
+      <div><div class="sub">Orders</div><div class="big num" id="tOrders">0</div></div>
+      <div><div class="sub">Average</div><div class="big num" id="tAvg">$0</div></div>
+    </div>
+    <div class="cols">
+      <div class="card"><h3>Items sold</h3><table><thead><tr><th>Item</th><th class="r">Sold</th><th class="r">Revenue</th></tr></thead><tbody id="tItems"></tbody></table></div>
+      <div class="card"><h3>By payment</h3><div id="tPays"></div></div>
+      <div class="card"><h3>Cash drawer check</h3>
+        <div class="drawer">
+          <label for="startCash">Starting cash</label><input id="startCash" class="num" inputmode="decimal" placeholder="0.00">
+          <span>Cash sales</span><span class="num" id="cashSales">$0.00</span>
+          <span class="em">Should be in drawer</span><span class="em num" id="drawerTotal">$0.00</span>
+        </div>
+      </div>
+      <div class="card"><h3>Export</h3><p class="hint" style="margin:0 0 12px">Download every order plus a summary tab as an Excel file.</p><button class="dl" data-export>Download Excel</button><p class="hint" id="dlNote" hidden></p></div>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const PRICE = {latte:5, oat:0.5, foam:0.5, pan:2};
+const PAYMENTS = ["Cash","Zelle","Cash App","Venmo","Apple Pay","Card"];
+const $ = s => document.querySelector(s);
+const money = n => "$" + (Math.round(n*100)/100).toFixed(2);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+let db = null, orders = [], cart = {lattes:[], pan:0}, uid = 0, toastTimer;
+const LS = "gwc-register-local";
+
+/* ---------- cart ---------- */
+const cartTotal = () => cart.lattes.reduce((s,l)=>s+PRICE.latte+(l.oat?PRICE.oat:0)+(l.foam?PRICE.foam:0),0) + cart.pan*PRICE.pan;
+const cartEmpty = () => !cart.lattes.length && !cart.pan;
+
+function renderCart(){
+  const el = $("#lines");
+  if (cartEmpty()) el.innerHTML = '<div class="empty">Tap a drink or pan dulce to start</div>';
+  else el.innerHTML = cart.lattes.map(l => `
+    <div class="line">
+      <span class="t">${l.flavor} Latte</span>
+      <span class="amt num">${money(PRICE.latte+(l.oat?PRICE.oat:0)+(l.foam?PRICE.foam:0))}</span>
+      <div class="mods">
+        <button class="chip" aria-pressed="${l.oat}" data-mod="oat" data-id="${l.id}">Oatmilk +.50</button>
+        <button class="chip" aria-pressed="${l.foam}" data-mod="foam" data-id="${l.id}">Cold foam +.50</button>
+        <button class="x" aria-label="Remove latte" data-rm="${l.id}">×</button>
+      </div>
+    </div>`).join("") + (cart.pan ? `
+    <div class="line">
+      <span class="t">Pan Dulce × ${cart.pan}</span>
+      <span class="amt num">${money(cart.pan*PRICE.pan)}</span>
+      <div class="mods step">
+        <button aria-label="One less pan dulce" data-pan="-1">−</button>
+        <button aria-label="One more pan dulce" data-pan="1">+</button>
+      </div>
+    </div>` : "");
+  $("#total").textContent = money(cartTotal());
+  document.querySelectorAll(".pay").forEach(b => b.disabled = cartEmpty());
+  const pb = $("#panBadge"); pb.hidden = !cart.pan; pb.textContent = cart.pan;
+  if (cartEmpty()) closeCash();
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.add){
+    wake();
+    if (t.dataset.add === "Pan") cart.pan++;
+    else cart.lattes.push({id:++uid, flavor:t.dataset.add, oat:false, foam:false});
+    renderCart();
+  } else if (t.dataset.mod){
+    const l = cart.lattes.find(x => x.id == t.dataset.id); l[t.dataset.mod] = !l[t.dataset.mod]; renderCart();
+  } else if (t.dataset.rm){
+    cart.lattes = cart.lattes.filter(x => x.id != t.dataset.rm); renderCart();
+  } else if (t.dataset.pan){
+    cart.pan = Math.max(0, cart.pan + Number(t.dataset.pan)); renderCart();
+  } else if (t.dataset.pay){
+    if (t.dataset.pay === "Cash") openCash(); else saveOrder(t.dataset.pay);
+  } else if (t.dataset.cash){
+    saveOrder("Cash", Number(t.dataset.cash));
+  } else if (t.dataset.view){
+    show(t.dataset.view);
+  } else if (t.hasAttribute("data-export")){
+    exportExcel();
+  } else if (t.dataset.void){
+    if (t.classList.contains("arm")) voidOrder(t.dataset.void);
+    else { t.classList.add("arm"); t.textContent = "Tap to confirm"; setTimeout(()=>{ if(t.isConnected){t.classList.remove("arm"); t.textContent="Void";} }, 3000); }
+  }
+});
+$("#clearBtn").onclick = () => { cart = {lattes:[], pan:0}; $("#member").value = ""; renderCart(); };
+$("#cashBack").onclick = closeCash;
+
+function openCash(){
+  const tot = cartTotal();
+  const opts = [tot, 5, 10, 20, 50].filter((v,i,a) => v >= tot && a.indexOf(v) === i).slice(0,4);
+  $("#cashOpts").innerHTML = opts.map(v => `<button data-cash="${v}" class="num">${v===tot?"Exact":money(v).replace(".00","")}</button>`).join("");
+  $("#payArea").hidden = true; $("#cashBox").hidden = false;
+}
+function closeCash(){ $("#payArea").hidden = false; $("#cashBox").hidden = true; }
+
+/* ---------- save / void ---------- */
+async function saveOrder(payment, tendered){
+  if (cartEmpty()) return;
+  const L = cart.lattes;
+  const order = {
+    createdAt: Date.now(),
+    vanilla: L.filter(l=>l.flavor==="Vanilla").length,
+    pumpkin: L.filter(l=>l.flavor==="Pumpkin").length,
+    oat: L.filter(l=>l.oat).length,
+    foam: L.filter(l=>l.foam).length,
+    pan: cart.pan,
+    drinks: L.map(l => l.flavor + (l.oat?" + oatmilk":"") + (l.foam?" + cold foam":"")),
+    total: Math.round(cartTotal()*100)/100,
+    payment,
+    name: $("#member").value.trim().slice(0,60)
+  };
+  if (tendered != null) order.tendered = tendered;
+  const saved = {cart, name:$("#member").value};
+  const no = orders.length + 1;
+  cart = {lattes:[], pan:0}; $("#member").value = ""; renderCart();
+  const change = tendered != null ? tendered - order.total : 0;
+  try {
+    let id;
+    if (db){ const ref = db.collection("orders").doc(); id = ref.id; await ref.set(order); }
+    else { id = "l" + Date.now(); orders.push({id, ...order}); persistLocal(); refresh(); }
+    toast(`<div><div class="big num">${change>0 ? "Change " + money(change) : money(order.total)}</div><div style="font-size:13px;opacity:.8">Order #${no} saved · ${esc(payment)}</div></div><button data-undo="${id}">Undo</button>`, change>0 ? 9000 : 4500);
+    $("#toast [data-undo]").onclick = () => { voidOrder(id); hideToast(); };
+  } catch(err){
+    cart = saved.cart; $("#member").value = saved.name; renderCart();
+    toast(`<div>Couldn't save that order. It's back in the ticket — try again.</div>`, 6000, true);
+  }
+}
+async function voidOrder(id){
+  try {
+    if (db) await db.collection("orders").doc(id).delete();
+    else { orders = orders.filter(o => o.id !== id); persistLocal(); refresh(); }
+  } catch(e){ toast("<div>Couldn't void that order. Try again.</div>", 5000, true); }
+}
+function toast(html, ms, err){
+  const t = $("#toast"); t.innerHTML = html; t.className = "toast" + (err?" err":""); t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, ms);
+}
+function hideToast(){ $("#toast").hidden = true; }
+
+/* ---------- derived views ---------- */
+function stats(){
+  const s = {total:0, vanilla:0, pumpkin:0, oat:0, foam:0, pan:0, pays:{}};
+  PAYMENTS.forEach(p => s.pays[p] = {n:0, amt:0});
+  for (const o of orders){
+    s.total += o.total; ["vanilla","pumpkin","oat","foam","pan"].forEach(k => s[k] += o[k]||0);
+    (s.pays[o.payment] ||= {n:0,amt:0}); s.pays[o.payment].n++; s.pays[o.payment].amt += o.total;
+  }
+  return s;
+}
+const timeOf = ms => new Date(ms).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+function itemsText(o){
+  const parts = [...(o.drinks||[])];
+  if (o.pan) parts.push(`Pan dulce × ${o.pan}`);
+  return parts.join(", ");
+}
+function refresh(){
+  const s = stats();
+  $("#hdrTotal").textContent = money(s.total);
+  $("#hdrCount").textContent = orders.length ? `(${orders.length})` : "";
+  $("#nextNo").textContent = `#${orders.length + 1}`;
+  // Orders list, newest first
+  const q = $("#search").value.trim().toLowerCase();
+  const rows = orders.map((o,i) => ({o, n:i+1})).reverse()
+    .filter(({o}) => !q || (o.name||"").toLowerCase().includes(q) || o.payment.toLowerCase().includes(q));
+  $("#olist").innerHTML = rows.length ? rows.map(({o,n}) => `
+    <div class="orow">
+      <div class="n num">#${n}</div>
+      <div style="min-width:0"><div class="what">${esc(itemsText(o))}</div>
+        <div class="meta">${timeOf(o.createdAt)}${o.name ? " · " + esc(o.name) : ""}${o.tendered!=null && o.tendered>o.total ? " · gave " + money(o.tendered) : ""}</div></div>
+      <div class="right"><strong class="num">${money(o.total)}</strong><span class="pill">${esc(o.payment)}</span><button class="void" data-void="${o.id}">Void</button></div>
+    </div>`).join("") : `<div class="empty" style="margin:16px;border-radius:12px">${q ? "No orders match that search." : "No orders yet. Orders appear here the moment the cashier taps a payment."}</div>`;
+  // Totals
+  $("#tTotal").textContent = money(s.total);
+  $("#tOrders").textContent = orders.length;
+  $("#tAvg").textContent = money(orders.length ? s.total/orders.length : 0);
+  const items = [["Vanilla Latte",s.vanilla,PRICE.latte],["Pumpkin Latte",s.pumpkin,PRICE.latte],["Pan Dulce",s.pan,PRICE.pan],["Oatmilk add-on",s.oat,PRICE.oat],["Cold Foam add-on",s.foam,PRICE.foam]];
+  $("#tItems").innerHTML = items.map(([n,c,p]) => `<tr><td>${n}</td><td class="r num">${c}</td><td class="r num">${money(c*p)}</td></tr>`).join("");
+  const max = Math.max(1, ...Object.values(s.pays).map(p => p.amt));
+  $("#tPays").innerHTML = Object.entries(s.pays).map(([k,v]) => `<div class="bar-row"><span>${esc(k)}</span><div class="track"><div class="fill" style="width:${v.amt/max*100}%"></div></div><span class="num" style="text-align:right">${money(v.amt)}</span></div>`).join("");
+  const start = parseFloat($("#startCash").value) || 0;
+  $("#cashSales").textContent = money(s.pays.Cash.amt);
+  $("#drawerTotal").textContent = money(start + s.pays.Cash.amt);
+}
+$("#search").addEventListener("input", refresh);
+$("#startCash").addEventListener("input", () => { try{ localStorage.setItem("gwc-start-cash", $("#startCash").value); }catch(e){} refresh(); });
+try{ $("#startCash").value = localStorage.getItem("gwc-start-cash") || ""; }catch(e){}
+
+function show(v){
+  ["register","orders","totals"].forEach(k => { $("#view-"+k).hidden = k!==v; $("#tab-"+k).setAttribute("aria-selected", k===v); });
+  try{ localStorage.setItem("gwc-tab", v); }catch(e){}
+}
+try{ const t = localStorage.getItem("gwc-tab"); if (t) show(t); }catch(e){}
+
+/* ---------- Excel export ---------- */
+let downloads = null;
+async function exportExcel(){
+  const note = $("#dlNote");
+  if (!window.XLSX || !downloads){ note.hidden = false; note.textContent = "Excel download isn't available in this view. Open the register in the Claude app or claude.ai to download."; show("totals"); return; }
+  const s = stats();
+  const head = ["Order #","Time","Vanilla Latte","Pumpkin Latte","Oatmilk","Cold Foam","Pan Dulce","Drinks","Total","Payment","Member Name","Cash Given"];
+  const rows = orders.map((o,i) => [i+1, new Date(o.createdAt).toLocaleString(), o.vanilla, o.pumpkin, o.oat, o.foam, o.pan, (o.drinks||[]).join("; "), o.total, o.payment, o.name||"", o.tendered ?? ""]);
+  const ws = XLSX.utils.aoa_to_sheet([head, ...rows]);
+  ws["!cols"] = [8,20,13,13,9,10,10,44,10,12,20,11].map(w => ({wch:w}));
+  rows.forEach((_,i) => { const c = ws[XLSX.utils.encode_cell({r:i+1,c:8})]; if (c) c.z = "$0.00"; });
+  const sum = [["GWC Coffee Fundraiser — Summary"],[],["Total raised", s.total],["Orders", orders.length],[],["Item","Sold","Revenue"],
+    ["Vanilla Latte", s.vanilla, s.vanilla*PRICE.latte],["Pumpkin Latte", s.pumpkin, s.pumpkin*PRICE.latte],["Pan Dulce", s.pan, s.pan*PRICE.pan],
+    ["Oatmilk add-on", s.oat, s.oat*PRICE.oat],["Cold Foam add-on", s.foam, s.foam*PRICE.foam],[],["Payment","Orders","Amount"],
+    ...Object.entries(s.pays).map(([k,v]) => [k, v.n, v.amt])];
+  const ws2 = XLSX.utils.aoa_to_sheet(sum); ws2["!cols"] = [{wch:22},{wch:10},{wch:12}];
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws2, "Summary"); XLSX.utils.book_append_sheet(wb, ws, "Orders");
+  const buf = XLSX.write(wb, {bookType:"xlsx", type:"array"});
+  const d = new Date(); const stamp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  try { await downloads.save({filename:`GWC Coffee Orders ${stamp}.xlsx`, data:buf}); }
+  catch(e){ if (e && e.code !== "declined") toast("<div>Download didn't go through. Try again in a moment.</div>", 5000, true); }
+}
+
+/* ---------- storage ---------- */
+function persistLocal(){ try{ localStorage.setItem(LS, JSON.stringify(orders)); }catch(e){} }
+let wakeLock = null;
+async function wake(){ if (wakeLock || !navigator.wakeLock) return; try{ wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", ()=> wakeLock = null); }catch(e){} }
+
+renderCart(); refresh();
+(async () => {
+  const use = n => window.claude?.use ? window.claude.use(n).catch(()=>null) : Promise.resolve(null);
+  const [d, dl] = await Promise.all([use("db"), use("downloads")]);
+  downloads = dl;
+  if (!d){
+    try{ orders = JSON.parse(localStorage.getItem(LS) || "[]"); }catch(e){ orders = []; }
+    const b = $("#banner"); b.hidden = false;
+    b.textContent = "Orders are only being saved on this device. Open the register signed in to claude.ai to keep them in the shared log.";
+    refresh(); return;
+  }
+  db = d;
+  db.collection("orders").orderBy("createdAt").onSnapshot(snap => {
+    orders = snap.docs.map(doc => ({id:doc.id, ...doc.data()}));
+    refresh();
+  }, err => {
+    const b = $("#banner"); b.hidden = false; b.textContent = "Lost connection to the order log. Reload the page to reconnect.";
+  });
+})();
+</script>
