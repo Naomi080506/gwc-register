@@ -1,3 +1,28 @@
+
+Claude Desktop (Windows), Connected
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Index · HTML
 <!doctype html>
 <html lang="en">
 <head>
@@ -28,7 +53,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-
 button:focus-visible,input:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
 .num{font-variant-numeric:tabular-nums}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:12px 40px}
-
+ 
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
 .bar{max-width:1180px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .logo{display:flex;align-items:baseline;gap:8px;margin-right:auto}
@@ -40,7 +65,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var
 .raised{font-family:var(--f-display);font-size:15px;color:var(--muted)}
 .raised strong{color:var(--ink);font-size:20px;font-weight:400}
 .banner{max-width:1180px;margin:8px auto 0;padding:8px 16px;font-size:13px;color:var(--warn);background:var(--warn-tint);border-radius:10px}
-
+ 
 /* Register */
 .reg{display:grid;grid-template-columns:1fr;gap:20px}
 @media (min-width:820px){.reg{grid-template-columns:1.25fr 1fr;align-items:start}}
@@ -54,7 +79,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var
 .tile.pastry{grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center}
 .tile .count{min-width:30px;height:30px;padding:0 8px;border-radius:999px;background:var(--plum);color:var(--plum-ink);font-weight:800;display:inline-grid;place-items:center;font-size:15px}
 .hint{font-size:13px;color:var(--muted);margin:12px 2px 0;line-height:1.5}
-
+ 
 .ticket{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px}
 @media (min-width:820px){.ticket{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px)}}
 .ticket h2{font-family:var(--f-display);font-weight:400;font-size:22px;margin:0;display:flex;justify-content:space-between;align-items:baseline}
@@ -87,13 +112,13 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var
 .cashbox .opts button{padding:15px 4px;border-radius:12px;background:var(--plum);color:var(--plum-ink);font-weight:800}
 .ghost{padding:10px 14px;border-radius:10px;border:1.5px solid var(--line);font-weight:700;font-size:14px;color:var(--muted)}
 .rowbtns{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}
-
+ 
 /* Toast */
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px 12px 18px;display:flex;gap:14px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px);width:max-content}
 .toast .big{font-family:var(--f-display);font-size:22px}
 .toast button{color:var(--bg);font-weight:800;padding:8px 10px;border-radius:8px;border:1.5px solid currentColor;opacity:.85}
 .toast.err{background:var(--warn);color:#fff}
-
+ 
 /* Orders */
 .olist{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .orow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:4px 14px;padding:12px 16px;border-top:1px solid var(--line);align-items:center}
@@ -104,11 +129,16 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var
 .orow .right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .orow .right strong{font-size:17px}
 .pill{display:inline-block;padding:2px 9px;border-radius:999px;background:var(--tint);font-size:12px;font-weight:800;color:var(--ink)}
-.void{font-size:13px;font-weight:700;color:var(--muted);padding:4px 8px;border-radius:8px}
-.void.arm{background:var(--warn);color:#fff}
+.acts{display:flex;gap:6px}
+.void,.edit{font-size:13px;font-weight:700;padding:6px 10px;border-radius:8px;border:1.5px solid var(--line)}
+.edit{color:var(--plum)}
+.void{color:var(--warn)}
+.void.arm{background:var(--warn);border-color:var(--warn);color:#fff}
+.editbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:var(--warn-tint);color:var(--warn);font-weight:700;font-size:14px}
+.editbar button{color:var(--warn);text-decoration:underline;font-weight:800}
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .toolbar input{font:inherit;padding:9px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);min-width:0;flex:1;max-width:280px}
-
+ 
 /* Totals */
 .hero{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-end;margin-bottom:22px}
 .hero .big{font-family:var(--f-display);font-size:clamp(44px,9vw,72px);line-height:1}
@@ -141,7 +171,7 @@ tr:last-child td{border-bottom:0}
 </style>
 </head>
 <body>
-
+ 
 <div class="lock" id="lock" hidden>
   <form id="lockForm">
     <h2>Coffee</h2>
@@ -151,7 +181,7 @@ tr:last-child td{border-bottom:0}
     <button class="dl" type="submit">Unlock register</button>
   </form>
 </div>
-
+ 
 <header>
   <div class="bar">
     <div class="logo"><small>Girls Who Code</small><b>Coffee</b></div>
@@ -164,7 +194,7 @@ tr:last-child td{border-bottom:0}
   </div>
 </header>
 <div class="banner" id="banner" hidden></div>
-
+ 
 <main class="wrap">
   <!-- REGISTER -->
   <section id="view-register" class="reg">
@@ -177,9 +207,10 @@ tr:last-child td{border-bottom:0}
       </div>
       <p class="hint">Oatmilk and cold foam (+$0.50 each) are toggles on each latte in the order. Coffee + pastry promo ($7) is the same as $5 + $2, so it adds up on its own.</p>
     </div>
-
+ 
     <aside class="ticket" aria-label="Current order">
-      <h2>Current order <span id="nextNo" class="num"></span></h2>
+      <h2><span id="ticketTitle">Current order</span> <span id="nextNo" class="num"></span></h2>
+      <div class="editbar" id="editBar" hidden><span id="editText">Editing an order</span><button id="cancelEdit">Cancel edit</button></div>
       <div class="lines" id="lines"></div>
       <div class="field">
         <label for="member">Member name (for points)</label>
@@ -205,7 +236,7 @@ tr:last-child td{border-bottom:0}
       <div class="rowbtns"><button class="ghost" id="clearBtn">Clear order</button></div>
     </aside>
   </section>
-
+ 
   <!-- ORDERS -->
   <section id="view-orders" hidden>
     <div class="toolbar">
@@ -214,7 +245,7 @@ tr:last-child td{border-bottom:0}
     </div>
     <div class="olist" id="olist"></div>
   </section>
-
+ 
   <!-- TOTALS -->
   <section id="view-totals" hidden>
     <div class="hero">
@@ -237,21 +268,22 @@ tr:last-child td{border-bottom:0}
   </section>
 </main>
 <div class="toast" id="toast" hidden></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+ 
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <script>
 const PRICE = {latte:5, oat:0.5, foam:0.5, pan:2};
 const PAYMENTS = ["Cash","Zelle","Cash App","Venmo","Apple Pay","Card"];
 const $ = s => document.querySelector(s);
 const money = n => "$" + (Math.round(n*100)/100).toFixed(2);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-
+ 
 let orders = [], cart = {lattes:[], pan:0}, uid = 0, toastTimer;
-
+let editing = null;   // {id, n, createdAt} while fixing an old order
+ 
 /* ---------- cart ---------- */
 const cartTotal = () => cart.lattes.reduce((s,l)=>s+PRICE.latte+(l.oat?PRICE.oat:0)+(l.foam?PRICE.foam:0),0) + cart.pan*PRICE.pan;
 const cartEmpty = () => !cart.lattes.length && !cart.pan;
-
+ 
 function renderCart(){
   const el = $("#lines");
   if (cartEmpty()) el.innerHTML = '<div class="empty">Tap a drink or pan dulce to start</div>';
@@ -277,8 +309,12 @@ function renderCart(){
   document.querySelectorAll(".pay").forEach(b => b.disabled = cartEmpty());
   const pb = $("#panBadge"); pb.hidden = !cart.pan; pb.textContent = cart.pan;
   if (cartEmpty()) closeCash();
+  $("#editBar").hidden = !editing;
+  if (editing) $("#editText").textContent = `Editing order #${editing.n} — pick the payment again to save`;
+  $("#ticketTitle").textContent = editing ? "Fix order" : "Current order";
+  $("#nextNo").hidden = !!editing;
 }
-
+ 
 document.addEventListener("click", e => {
   const t = e.target.closest("button"); if (!t) return;
   if (t.dataset.add){
@@ -300,14 +336,30 @@ document.addEventListener("click", e => {
     show(t.dataset.view);
   } else if (t.hasAttribute("data-export")){
     exportExcel();
+  } else if (t.dataset.edit){
+    startEdit(t.dataset.edit);
   } else if (t.dataset.void){
     if (t.classList.contains("arm")) voidOrder(t.dataset.void);
-    else { t.classList.add("arm"); t.textContent = "Tap to confirm"; setTimeout(()=>{ if(t.isConnected){t.classList.remove("arm"); t.textContent="Void";} }, 3000); }
+    else { t.classList.add("arm"); t.textContent = "Tap again to delete"; setTimeout(()=>{ if(t.isConnected){t.classList.remove("arm"); t.textContent="Delete";} }, 3000); }
   }
 });
-$("#clearBtn").onclick = () => { cart = {lattes:[], pan:0}; $("#member").value = ""; renderCart(); };
+$("#clearBtn").onclick = () => { cart = {lattes:[], pan:0}; $("#member").value = ""; editing = null; renderCart(); };
+$("#cancelEdit").onclick = () => { cart = {lattes:[], pan:0}; $("#member").value = ""; editing = null; renderCart(); show("orders"); };
+ 
+// Load an old order back into the ticket so it can be fixed
+function startEdit(id){
+  const i = orders.findIndex(o => o.id === id); if (i < 0) return;
+  const o = orders[i];
+  cart = {lattes: (o.drinks||[]).map(d => {
+    const parts = String(d).split(" + ");
+    return {id:++uid, flavor:parts[0], oat:parts.includes("oatmilk"), foam:parts.includes("cold foam")};
+  }), pan: Number(o.pan)||0};
+  $("#member").value = o.name || "";
+  editing = {id, n: i+1, createdAt: o.createdAt};
+  renderCart(); show("register");
+}
 $("#cashBack").onclick = closeCash;
-
+ 
 function openCash(){
   const tot = cartTotal();
   const opts = [tot, 5, 10, 20, 50].filter((v,i,a) => v >= tot && a.indexOf(v) === i).slice(0,4);
@@ -315,13 +367,13 @@ function openCash(){
   $("#payArea").hidden = true; $("#cashBox").hidden = false;
 }
 function closeCash(){ $("#payArea").hidden = false; $("#cashBox").hidden = true; }
-
+ 
 /* ---------- save / void ---------- */
 async function saveOrder(payment, tendered){
   if (cartEmpty()) return;
   const L = cart.lattes;
   const order = {
-    createdAt: Date.now(),
+    createdAt: editing ? editing.createdAt : Date.now(),
     vanilla: L.filter(l=>l.flavor==="Vanilla").length,
     pumpkin: L.filter(l=>l.flavor==="Pumpkin").length,
     oat: L.filter(l=>l.oat).length,
@@ -334,15 +386,18 @@ async function saveOrder(payment, tendered){
   };
   if (tendered != null) order.tendered = tendered;
   const saved = {cart, name:$("#member").value};
-  const no = orders.length + 1;
+  const no = editing ? editing.n : orders.length + 1;
+  const replacing = editing; editing = null;
   cart = {lattes:[], pan:0}; $("#member").value = ""; renderCart();
   const change = tendered != null ? tendered - order.total : 0;
   try {
     const id = (crypto.randomUUID ? crypto.randomUUID() : "o" + Date.now() + Math.random().toString(36).slice(2));
-    pending.set(id, {id, ...order}); orders.push({id, ...order}); refresh();   // show it instantly
+    pending.set(id, {id, ...order}); orders.push({id, ...order}); orders.sort((a,b) => a.createdAt - b.createdAt); refresh();   // show it instantly
+    if (replacing) orders = orders.filter(o => o.id !== replacing.id);
     try { await api("add", {order: {id, ...order}}); }
-    catch(e){ pending.delete(id); orders = orders.filter(o => o.id !== id); refresh(); throw e; }
-    toast(`<div><div class="big num">${change>0 ? "Change " + money(change) : money(order.total)}</div><div style="font-size:13px;opacity:.8">Order #${no} saved · ${esc(payment)}</div></div><button data-undo="${id}">Undo</button>`, change>0 ? 9000 : 4500);
+    catch(e){ pending.delete(id); orders = orders.filter(o => o.id !== id); refresh(); editing = replacing; throw e; }
+    if (replacing) { voided.add(replacing.id); pending.delete(replacing.id); refresh(); api("void", {id: replacing.id}).catch(() => toast("<div>Saved the fix, but couldn't remove the old version. Void it in Orders.</div>", 7000, true)); }
+    toast(`<div><div class="big num">${change>0 ? "Change " + money(change) : money(order.total)}</div><div style="font-size:13px;opacity:.8">Order #${no} ${replacing ? "updated" : "saved"} · ${esc(payment)}</div></div><button data-undo="${id}">Undo</button>`, change>0 ? 9000 : 4500);
     $("#toast [data-undo]").onclick = () => { voidOrder(id); hideToast(); };
   } catch(err){
     cart = saved.cart; $("#member").value = saved.name; renderCart();
@@ -353,14 +408,14 @@ async function voidOrder(id){
   try {
     voided.add(id); pending.delete(id); orders = orders.filter(o => o.id !== id); refresh();
     await api("void", {id});
-  } catch(e){ toast("<div>Couldn't void that order. Try again.</div>", 5000, true); }
+  } catch(e){ toast("<div>Couldn't delete that order. Try again.</div>", 5000, true); }
 }
 function toast(html, ms, err){
   const t = $("#toast"); t.innerHTML = html; t.className = "toast" + (err?" err":""); t.hidden = false;
   clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, ms);
 }
 function hideToast(){ $("#toast").hidden = true; }
-
+ 
 /* ---------- derived views ---------- */
 function stats(){
   const s = {total:0, vanilla:0, pumpkin:0, oat:0, foam:0, pan:0, pays:{}};
@@ -391,7 +446,7 @@ function refresh(){
       <div class="n num">#${n}</div>
       <div style="min-width:0"><div class="what">${esc(itemsText(o))}</div>
         <div class="meta">${timeOf(o.createdAt)}${o.name ? " · " + esc(o.name) : ""}${o.tendered!=null && o.tendered>o.total ? " · gave " + money(o.tendered) : ""}</div></div>
-      <div class="right"><strong class="num">${money(o.total)}</strong><span class="pill">${esc(o.payment)}</span><button class="void" data-void="${o.id}">Void</button></div>
+      <div class="right"><strong class="num">${money(o.total)}</strong><span class="pill">${esc(o.payment)}</span><span class="acts"><button class="edit" data-edit="${o.id}">Edit</button><button class="void" data-void="${o.id}">Delete</button></span></div>
     </div>`).join("") : `<div class="empty" style="margin:16px;border-radius:12px">${q ? "No orders match that search." : "No orders yet. Orders appear here the moment the cashier taps a payment."}</div>`;
   // Totals
   $("#tTotal").textContent = money(s.total);
@@ -408,33 +463,184 @@ function refresh(){
 $("#search").addEventListener("input", refresh);
 $("#startCash").addEventListener("input", () => { try{ localStorage.setItem("gwc-start-cash", $("#startCash").value); }catch(e){} refresh(); });
 try{ $("#startCash").value = localStorage.getItem("gwc-start-cash") || ""; }catch(e){}
-
+ 
 function show(v){
   ["register","orders","totals"].forEach(k => { $("#view-"+k).hidden = k!==v; $("#tab-"+k).setAttribute("aria-selected", k===v); });
   try{ localStorage.setItem("gwc-tab", v); }catch(e){}
 }
 try{ const t = localStorage.getItem("gwc-tab"); if (t) show(t); }catch(e){}
-
-/* ---------- Excel export ---------- */
+ 
+/* ---------- Excel export (styled, using ExcelJS) ---------- */
+async function buildWorkbook(ExcelJS, orders, PRICE, PAYMENTS, startCash){
+  const PLUM = "FF7B5167", PLUM_LIGHT = "FFF4EAEF", CREAM = "FFFBF6EE", GRAY = "FF86707C", LINE = "FFE7DAE0";
+  const MONEY = '"$"#,##0.00';
+  const font = (o={}) => ({name:"Arial", size:11, color:{argb:"FF3E2A35"}, ...o});
+  const fill = argb => ({type:"pattern", pattern:"solid", fgColor:{argb}});
+  const thin = {style:"thin", color:{argb:LINE}};
+  const exported = new Date().toLocaleString([], {month:"long", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit"});
+ 
+  const wb = new ExcelJS.Workbook();
+  wb.creator = "GWC Coffee Register";
+ 
+  /* ===== Sheet 1: Summary ===== */
+  const s = wb.addWorksheet("Summary", {views:[{showGridLines:false}], properties:{tabColor:{argb:PLUM}}});
+  s.columns = [{width:26},{width:14},{width:14},{width:16}];
+ 
+  // Title band
+  s.mergeCells("A1:D1");
+  Object.assign(s.getCell("A1"), {value:"GWC Coffee Fundraiser", font:font({size:18, bold:true, color:{argb:"FFFFFFFF"}}), fill:fill(PLUM), alignment:{vertical:"middle", indent:1}});
+  s.getRow(1).height = 34;
+  s.mergeCells("A2:D2");
+  Object.assign(s.getCell("A2"), {value:`Sales report · downloaded ${exported}`, font:font({italic:true, size:10, color:{argb:GRAY}}), alignment:{indent:1}});
+ 
+  // Count everything
+  const sum = k => orders.reduce((t,o) => t + (Number(o[k])||0), 0);
+  const items = [
+    ["Vanilla Latte", sum("vanilla"), PRICE.latte],
+    ["Pumpkin Latte", sum("pumpkin"), PRICE.latte],
+    ["Pan Dulce", sum("pan"), PRICE.pan],
+    ["Oatmilk (add-on)", sum("oat"), PRICE.oat],
+    ["Cold Foam (add-on)", sum("foam"), PRICE.foam],
+  ];
+  const total = items.reduce((t,[,q,p]) => t + q*p, 0);
+  const pays = PAYMENTS.map(p => {
+    const os = orders.filter(o => o.payment === p);
+    return [p, os.length, os.reduce((t,o) => t + Number(o.total), 0)];
+  });
+ 
+  // Big-number cards (row 4 = label, row 5 = number)
+  const cards = [["A","TOTAL RAISED", total, MONEY], ["B","ORDERS", orders.length, "0"], ["C","AVG ORDER", orders.length ? total/orders.length : 0, MONEY]];
+  for (const [col, label, val, fmt] of cards){
+    Object.assign(s.getCell(col+"4"), {value:label, font:font({size:9, bold:true, color:{argb:GRAY}}), fill:fill(PLUM_LIGHT), alignment:{indent:1}});
+    Object.assign(s.getCell(col+"5"), {value:val, numFmt:fmt, font:font({size:col==="A"?22:16, bold:true, color:{argb:PLUM}}), fill:fill(PLUM_LIGHT), alignment:{horizontal:"left", indent:1, vertical:"middle"}});
+  }
+  s.getRow(5).height = 36;
+ 
+  // A small table with a section title, header row, body rows and a total row
+  function table(startRow, title, headers, rows, formats, totalLabel, totalCols){
+    Object.assign(s.getCell(`A${startRow}`), {value:title, font:font({size:13, bold:true, color:{argb:PLUM}})});
+    const h = s.getRow(startRow+1);
+    headers.forEach((t,i) => {
+      const c = h.getCell(i+1);
+      Object.assign(c, {value:t, font:font({bold:true, size:10, color:{argb:"FFFFFFFF"}}), fill:fill(PLUM), alignment:{horizontal:i?"right":"left", indent:i?0:1}});
+    });
+    rows.forEach((r,ri) => {
+      const row = s.getRow(startRow+2+ri);
+      r.forEach((v,i) => {
+        const c = row.getCell(i+1);
+        c.value = v; c.font = font(); c.numFmt = formats[i] || "General";
+        c.border = {bottom:thin}; c.alignment = {horizontal:i?"right":"left", indent:i?0:1};
+        if (ri % 2) c.fill = fill(CREAM);
+      });
+    });
+    const first = startRow+2, last = startRow+1+rows.length, tr = s.getRow(last+1);
+    Object.assign(tr.getCell(1), {value:totalLabel, font:font({bold:true}), alignment:{indent:1}});
+    totalCols.forEach(i => {
+      const L = String.fromCharCode(65+i);
+      Object.assign(tr.getCell(i+1), {value:{formula:`SUM(${L}${first}:${L}${last})`, result:rows.reduce((t,r)=>t+Number(r[i]),0)}, numFmt:formats[i], font:font({bold:true}), alignment:{horizontal:"right"}});
+    });
+    for (let i=1;i<=headers.length;i++) tr.getCell(i).border = {top:{style:"medium", color:{argb:PLUM}}};
+    return last+1;
+  }
+ 
+  // What we sold — Revenue is a formula (Qty × Price) so it stays right if someone edits it
+  const itemRows = items.map(([n,q,p],i) => [n, q, p, {formula:`B${9+i}*C${9+i}`, result:q*p}]);
+  let r = table(7, "What we sold", ["Item","Qty sold","Price","Revenue"], itemRows, [null,"0",MONEY,MONEY], "Total", [3]);
+  // fix Revenue total result (rows hold formula objects)
+  s.getCell(`D${r}`).value = {formula:`SUM(D9:D${r-1})`, result:total};
+ 
+  // How people paid
+  const payStart = r + 2;
+  const payRows = pays.map(([p,n,a],i) => [p, n, a, {formula:`IF($D$5=0,0,C${payStart+2+i}/$C$${payStart+2+pays.length})`, result: total ? a/total : 0}]);
+  r = table(payStart, "How people paid", ["Payment","Orders","Amount","% of total"], payRows, [null,"0",MONEY,"0%"], "Total", [1,2]);
+  // percent column total + correct % formula reference to the total row
+  payRows.forEach((_,i) => { s.getCell(`D${payStart+2+i}`).value = {formula:`IF($C$${r}=0,0,C${payStart+2+i}/$C$${r})`, result: total ? pays[i][2]/total : 0}; });
+  Object.assign(s.getCell(`D${r}`), {value: total ? 1 : 0, numFmt:"0%", font:font({bold:true}), alignment:{horizontal:"right"}});
+ 
+  // Cash drawer check
+  const cashRow = r + 2, cashSales = pays.find(p => p[0]==="Cash")[2];
+  Object.assign(s.getCell(`A${cashRow}`), {value:"Cash drawer check", font:font({size:13, bold:true, color:{argb:PLUM}})});
+  const drawer = [["Starting cash", startCash||0], ["+ Cash sales", cashSales], ["Should be in the drawer", null]];
+  drawer.forEach(([label,val],i) => {
+    const row = cashRow+1+i;
+    Object.assign(s.getCell(`A${row}`), {value:label, font:font({bold:i===2}), alignment:{indent:1}});
+    const c = s.getCell(`D${row}`);
+    c.value = i===2 ? {formula:`D${row-2}+D${row-1}`, result:(startCash||0)+cashSales} : val;
+    c.numFmt = MONEY; c.font = font({bold:i===2, size:i===2?13:11, color:{argb:i===2?PLUM:"FF3E2A35"}});
+    if (i===2){ for (const L of "ABCD") { s.getCell(`${L}${row}`).border = {top:{style:"medium", color:{argb:PLUM}}}; s.getCell(`${L}${row}`).fill = fill(PLUM_LIGHT); } }
+  });
+  Object.assign(s.getCell(`A${cashRow+5}`), {value:"Tip: the Orders tab has every sale, one row per customer.", font:font({italic:true, size:10, color:{argb:GRAY}})});
+ 
+  /* ===== Sheet 2: Orders ===== */
+  const o = wb.addWorksheet("Orders", {views:[{state:"frozen", ySplit:1, showGridLines:false}], properties:{tabColor:{argb:"FFCC9DB6"}}});
+  o.columns = [
+    {header:"#", key:"n", width:6},
+    {header:"Time", key:"time", width:12},
+    {header:"What they ordered", key:"what", width:46},
+    {header:"Vanilla", key:"vanilla", width:9},
+    {header:"Pumpkin", key:"pumpkin", width:10},
+    {header:"Oatmilk", key:"oat", width:9},
+    {header:"Cold Foam", key:"foam", width:11},
+    {header:"Pan Dulce", key:"pan", width:10},
+    {header:"Total", key:"total", width:11},
+    {header:"Paid with", key:"payment", width:12},
+    {header:"Member", key:"name", width:18},
+    {header:"Cash given", key:"tendered", width:12},
+    {header:"Change", key:"change", width:10},
+  ];
+  orders.forEach((x,i) => {
+    const latte = d => { const [flavor, ...extras] = String(d).split(" + "); return `${flavor} latte` + (extras.length ? ` (${extras.join(", ")})` : ""); };
+    const what = [...(x.drinks||[]).map(latte), x.pan ? `${x.pan} pan dulce` : ""].filter(Boolean).join(", ");
+    const tendered = x.tendered != null && x.tendered !== "" ? Number(x.tendered) : null;
+    o.addRow({n:i+1, time:new Date(x.createdAt).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"}), what, vanilla:x.vanilla||null, pumpkin:x.pumpkin||null, oat:x.oat||null, foam:x.foam||null, pan:x.pan||null,
+              total:Number(x.total), payment:x.payment, name:x.name||"", tendered, change: tendered!=null ? tendered-Number(x.total) : null});
+  });
+  const head = o.getRow(1);
+  head.height = 24;
+  head.eachCell(c => { c.font = font({bold:true, color:{argb:"FFFFFFFF"}}); c.fill = fill(PLUM); c.alignment = {vertical:"middle", horizontal:"center"}; });
+  const lastData = orders.length + 1;
+  for (let i=2;i<=lastData;i++){
+    const row = o.getRow(i);
+    row.eachCell({includeEmpty:true}, (c, col) => {
+      c.font = font(); c.border = {bottom:thin};
+      if (i % 2 === 1) c.fill = fill(CREAM);
+      c.alignment = {horizontal: col===3||col===11 ? "left" : "center", vertical:"middle", wrapText: col===3};
+    });
+    for (const k of ["total","tendered","change"]) row.getCell(k).numFmt = MONEY;
+    row.getCell("total").font = font({bold:true});
+  }
+  // Totals row
+  const tr = o.getRow(lastData + 1);
+  tr.getCell(3).value = "TOTAL";
+  [4,5,6,7,8,9].forEach(col => {
+    const L = String.fromCharCode(64+col);
+    const key = ["vanilla","pumpkin","oat","foam","pan","total"][col-4];
+    tr.getCell(col).value = {formula:`SUM(${L}2:${L}${lastData})`, result: key==="total" ? total : sum(key)};
+  });
+  tr.getCell(9).numFmt = MONEY;
+  for (let col=1; col<=13; col++){
+    const c = tr.getCell(col);
+    c.font = font({bold:true, color:{argb:PLUM}}); c.fill = fill(PLUM_LIGHT);
+    c.border = {top:{style:"medium", color:{argb:PLUM}}};
+    c.alignment = {horizontal: col===3 ? "left" : "center"};
+  }
+  o.autoFilter = {from:"A1", to:{row:lastData, column:13}};
+  return wb;
+}
+ 
 async function exportExcel(){
   const note = $("#dlNote");
-  if (!window.XLSX){ note.hidden = false; note.textContent = "The Excel tool didn't load. Check your internet connection and reload."; show("totals"); return; }
-  const s = stats();
-  const head = ["Order #","Time","Vanilla Latte","Pumpkin Latte","Oatmilk","Cold Foam","Pan Dulce","Drinks","Total","Payment","Member Name","Cash Given"];
-  const rows = orders.map((o,i) => [i+1, new Date(o.createdAt).toLocaleString(), o.vanilla, o.pumpkin, o.oat, o.foam, o.pan, (o.drinks||[]).join("; "), o.total, o.payment, o.name||"", o.tendered ?? ""]);
-  const ws = XLSX.utils.aoa_to_sheet([head, ...rows]);
-  ws["!cols"] = [8,20,13,13,9,10,10,44,10,12,20,11].map(w => ({wch:w}));
-  rows.forEach((_,i) => { const c = ws[XLSX.utils.encode_cell({r:i+1,c:8})]; if (c) c.z = "$0.00"; });
-  const sum = [["GWC Coffee Fundraiser — Summary"],[],["Total raised", s.total],["Orders", orders.length],[],["Item","Sold","Revenue"],
-    ["Vanilla Latte", s.vanilla, s.vanilla*PRICE.latte],["Pumpkin Latte", s.pumpkin, s.pumpkin*PRICE.latte],["Pan Dulce", s.pan, s.pan*PRICE.pan],
-    ["Oatmilk add-on", s.oat, s.oat*PRICE.oat],["Cold Foam add-on", s.foam, s.foam*PRICE.foam],[],["Payment","Orders","Amount"],
-    ...Object.entries(s.pays).map(([k,v]) => [k, v.n, v.amt])];
-  const ws2 = XLSX.utils.aoa_to_sheet(sum); ws2["!cols"] = [{wch:22},{wch:10},{wch:12}];
-  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws2, "Summary"); XLSX.utils.book_append_sheet(wb, ws, "Orders");
+  if (!window.ExcelJS){ note.hidden = false; note.textContent = "The Excel tool didn't load. Check your internet connection and reload."; show("totals"); return; }
+  const wb = await buildWorkbook(window.ExcelJS, orders, PRICE, PAYMENTS, parseFloat($("#startCash").value) || 0);
+  const buf = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
   const d = new Date(); const stamp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-  XLSX.writeFile(wb, `GWC Coffee Orders ${stamp}.xlsx`);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `GWC Coffee Report ${stamp}.xlsx`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
-
+ 
 /* ---------- storage (Google Sheet) ---------- */
 // Your Apps Script web app. The passcode is NOT stored here; each device types it once.
 const API_URL = "https://script.google.com/macros/s/AKfycbxvJk_dVd_E-cm4ZdxcN6FE_oKvlEY6xr_VbpfE5cttwkqnPdn0DYxDxv3LjKrZ4Jnpfg/exec";
@@ -443,7 +649,7 @@ let KEY = "";
 try { KEY = sessionStorage.getItem(KEY_STORE) || ""; } catch(e){}
 const pending = new Map();   // orders saved on this device but not back from the sheet yet
 const voided = new Set();    // orders voided on this device
-
+ 
 // Send an order or a void to the sheet.
 // text/plain avoids a CORS "preflight" request, which Apps Script can't answer.
 async function api(action, payload){
@@ -456,7 +662,7 @@ async function api(action, payload){
   if (data.error) throw new Error(data.error);
   return data;
 }
-
+ 
 // Read every order from the sheet
 async function fetchOrders(key){
   const res = await fetch(API_URL + "?key=" + encodeURIComponent(key));
@@ -464,7 +670,7 @@ async function fetchOrders(key){
   if (data.error) throw new Error(data.error);
   return data;
 }
-
+ 
 async function load(){
   if (!KEY) return;
   try {
@@ -486,7 +692,7 @@ async function load(){
     b.textContent = "Can't reach the order sheet right now. Check the Wi-Fi; new orders will fail to save until it's back.";
   }
 }
-
+ 
 // Passcode screen
 function lockScreen(msg){
   $("#lock").hidden = false; $("#lockMsg").textContent = msg || "";
@@ -507,13 +713,14 @@ $("#lockForm").addEventListener("submit", async e => {
     $("#lockMsg").textContent = String(err.message).includes("passcode") ? "Wrong passcode. Try again." : "Can't reach the sheet. Check the internet connection.";
   }
 });
-
+ 
 let wakeLock = null;
 async function wake(){ if (wakeLock || !navigator.wakeLock) return; try{ wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", ()=> wakeLock = null); }catch(e){} }
-
+ 
 renderCart(); refresh();
 if (KEY) load(); else lockScreen();
 setInterval(load, 10000);   // pick up other cashiers' orders every 10 seconds
 </script>
 </body>
 </html>
+ 
